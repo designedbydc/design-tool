@@ -1,0 +1,19 @@
+{
+  "name": "figma-clone",
+  "version": "1.0.0",
+  "description": "A Figma clone built with modern web technologies",
+  "type": "module",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "concurrently \"npm run start\" \"npm run watch-css\"",
+    "watch-css": "tailwindcss -i ./css/styles.css -o ./css/output.css --watch"
+  },
+  "dependencies": {
+    "express": "^4.18.2"
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.2",
+    "tailwindcss": "^3.4.1"
+  }
+}

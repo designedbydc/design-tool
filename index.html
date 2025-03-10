@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Figma Clone</title>
+    
+    <!-- Material Design Icons -->
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet" />
+    
+    <!-- External Libraries -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/fabric.js/5.3.1/fabric.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@simonwep/pickr/dist/pickr.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@simonwep/pickr/dist/themes/classic.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/split.js@1.6.5/dist/split.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/file-saver@2.0.5/dist/FileSaver.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/mousetrap@1.6.5/mousetrap.min.js"></script>
+    <!-- GL Matrix for WebGL operations -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gl-matrix/2.8.1/gl-matrix-min.js"></script>
+    
+    <!-- Styles -->
+    <link rel="stylesheet" href="css/output.css">
+    
+    <!-- Application Scripts -->
+    <script type="module" src="js/app.js"></script>
+</head>
+<body class="bg-gray-50 text-gray-900">
+    <div class="app-container">
+        <!-- Top Menu Bar -->
+        <div class="menu-bar bg-white border-b border-gray-200 shadow-sm flex items-center px-4 py-2">
+            <div class="dropdown relative">
+                <button class="menu-item px-3 py-1.5 rounded hover:bg-gray-100 flex items-center" id="file-menu-button">
+                    File
+                    <span class="material-symbols-outlined text-sm ml-1">expand_more</span>
+                </button>
+                <div class="dropdown-menu hidden absolute left-0 mt-1 w-48 bg-white shadow-lg rounded-md border border-gray-200 z-50" id="file-menu-dropdown">
+                    <div class="py-1">
+                        <a href="#" class="dropdown-item flex items-center px-4 py-2 text-sm hover:bg-gray-100" data-action="new">
+                            <span class="material-symbols-outlined mr-2 text-gray-500">add</span>
+                            New
+                        </a>
+                        <a href="#" class="dropdown-item flex items-center px-4 py-2 text-sm hover:bg-gray-100" data-action="open">
+                            <span class="material-symbols-outlined mr-2 text-gray-500">folder_open</span>
+                            Open
+                        </a>
+                        <a href="#" class="dropdown-item flex items-center px-4 py-2 text-sm hover:bg-gray-100" data-action="save">
+                            <span class="material-symbols-outlined mr-2 text-gray-500">save</span>
+                            Save
+                        </a>
+                        <a href="#" class="dropdown-item flex items-center px-4 py-2 text-sm hover:bg-gray-100" data-action="export">
+                            <span class="material-symbols-outlined mr-2 text-gray-500">download</span>
+                            Export
+                        </a>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="dropdown relative">
+                <button class="menu-item px-3 py-1.5 rounded hover:bg-gray-100 flex items-center" id="edit-menu-button">
+                    Edit
+                    <span class="material-symbols-outlined text-sm ml-1">expand_more</span>
+                </button>
+                <div class="dropdown-menu hidden absolute left-0 mt-1 w-48 bg-white shadow-lg rounded-md border border-gray-200 z-50" id="edit-menu-dropdown">
+                    <div class="py-1">
+                        <a href="#" class="dropdown-item flex items-center px-4 py-2 text-sm hover:bg-gray-100" data-action="undo">
+                            <span class="material-symbols-outlined mr-2 text-gray-500">undo</span>
+                            Undo
+                            <span class="ml-auto text-xs text-gray-400">Ctrl+Z</span>
+                        </a>
+                        <a href="#" class="dropdown-item flex items-center px-4 py-2 text-sm hover:bg-gray-100" data-action="redo">
+                            <span class="material-symbols-outlined mr-2 text-gray-500">redo</span>
+                            Redo
+                            <span class="ml-auto text-xs text-gray-400">Ctrl+Shift+Z</span>
+                        </a>
+                        <div class="border-t border-gray-200 my-1"></div>
+                        <a href="#" class="dropdown-item flex items-center px-4 py-2 text-sm hover:bg-gray-100" data-action="cut">
+                            <span class="material-symbols-outlined mr-2 text-gray-500">content_cut</span>
+                            Cut
+                            <span class="ml-auto text-xs text-gray-400">Ctrl+X</span>
+                        </a>
+                        <a href="#" class="dropdown-item flex items-center px-4 py-2 text-sm hover:bg-gray-100" data-action="copy">
+                            <span class="material-symbols-outlined mr-2 text-gray-500">content_copy</span>
+                            Copy
+                            <span class="ml-auto text-xs text-gray-400">Ctrl+C</span>
+                        </a>
+                        <a href="#" class="dropdown-item flex items-center px-4 py-2 text-sm hover:bg-gray-100" data-action="paste">
+                            <span class="material-symbols-outlined mr-2 text-gray-500">content_paste</span>
+                            Paste
+                            <span class="ml-auto text-xs text-gray-400">Ctrl+V</span>
+                        </a>
+                        <div class="border-t border-gray-200 my-1"></div>
+                        <a href="#" class="dropdown-item flex items-center px-4 py-2 text-sm hover:bg-gray-100" data-action="delete">
+                            <span class="material-symbols-outlined mr-2 text-gray-500">delete</span>
+                            Delete
+                            <span class="ml-auto text-xs text-gray-400">Del</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="dropdown relative">
+                <button class="menu-item px-3 py-1.5 rounded hover:bg-gray-100 flex items-center" id="view-menu-button">
+                    View
+                    <span class="material-symbols-outlined text-sm ml-1">expand_more</span>
+                </button>
+                <div class="dropdown-menu hidden absolute left-0 mt-1 w-48 bg-white shadow-lg rounded-md border border-gray-200 z-50" id="view-menu-dropdown">
+                    <div class="py-1">
+                        <a href="#" class="dropdown-item flex items-center px-4 py-2 text-sm hover:bg-gray-100" data-action="zoom-in">
+                            <span class="material-symbols-outlined mr-2 text-gray-500">zoom_in</span>
+                            Zoom In
+                        </a>
+                        <a href="#" class="dropdown-item flex items-center px-4 py-2 text-sm hover:bg-gray-100" data-action="zoom-out">
+                            <span class="material-symbols-outlined mr-2 text-gray-500">zoom_out</span>
+                            Zoom Out
+                        </a>
+                        <a href="#" class="dropdown-item flex items-center px-4 py-2 text-sm hover:bg-gray-100" data-action="fit-screen">
+                            <span class="material-symbols-outlined mr-2 text-gray-500">fit_screen</span>
+                            Fit to Screen
+                        </a>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="dropdown relative">
+                <button class="menu-item px-3 py-1.5 rounded hover:bg-gray-100 flex items-center" id="object-menu-button">
+                    Object
+                    <span class="material-symbols-outlined text-sm ml-1">expand_more</span>
+                </button>
+                <div class="dropdown-menu hidden absolute left-0 mt-1 w-48 bg-white shadow-lg rounded-md border border-gray-200 z-50" id="object-menu-dropdown">
+                    <div class="py-1">
+                        <a href="#" class="dropdown-item flex items-center px-4 py-2 text-sm hover:bg-gray-100" data-action="bring-forward">
+                            <span class="material-symbols-outlined mr-2 text-gray-500">flip_to_front</span>
+                            Bring Forward
+                        </a>
+                        <a href="#" class="dropdown-item flex items-center px-4 py-2 text-sm hover:bg-gray-100" data-action="send-backward">
+                            <span class="material-symbols-outlined mr-2 text-gray-500">flip_to_back</span>
+                            Send Backward
+                        </a>
+                        <a href="#" class="dropdown-item flex items-center px-4 py-2 text-sm hover:bg-gray-100" data-action="bring-to-front">
+                            <span class="material-symbols-outlined mr-2 text-gray-500">vertical_align_top</span>
+                            Bring to Front
+                        </a>
+                        <a href="#" class="dropdown-item flex items-center px-4 py-2 text-sm hover:bg-gray-100" data-action="send-to-back">
+                            <span class="material-symbols-outlined mr-2 text-gray-500">vertical_align_bottom</span>
+                            Send to Back
+                        </a>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="dropdown relative">
+                <button class="menu-item px-3 py-1.5 rounded hover:bg-gray-100 flex items-center" id="help-menu-button">
+                    Help
+                    <span class="material-symbols-outlined text-sm ml-1">expand_more</span>
+                </button>
+                <div class="dropdown-menu hidden absolute left-0 mt-1 w-48 bg-white shadow-lg rounded-md border border-gray-200 z-50" id="help-menu-dropdown">
+                    <div class="py-1">
+                        <a href="#" class="dropdown-item flex items-center px-4 py-2 text-sm hover:bg-gray-100" data-action="about">
+                            <span class="material-symbols-outlined mr-2 text-gray-500">info</span>
+                            About
+                        </a>
+                        <a href="#" class="dropdown-item flex items-center px-4 py-2 text-sm hover:bg-gray-100" data-action="shortcuts">
+                            <span class="material-symbols-outlined mr-2 text-gray-500">keyboard</span>
+                            Keyboard Shortcuts
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Content Area -->
+        <div class="main-content">
+            <!-- Left Sidebar - Tools -->
+            <div class="sidebar left-sidebar bg-white border-r border-gray-200">
+                <div class="tool-item" data-tool="select">
+                    <span class="material-symbols-outlined">near_me</span>
+                </div>
+                <div class="tool-item" data-tool="rectangle">
+                    <span class="material-symbols-outlined">rectangle</span>
+                </div>
+                <div class="tool-item" data-tool="circle">
+                    <span class="material-symbols-outlined">circle</span>
+                </div>
+                <div class="tool-item" data-tool="line">
+                    <span class="material-symbols-outlined">horizontal_rule</span>
+                </div>
+                <div class="tool-item" data-tool="text">
+                    <span class="material-symbols-outlined">text_fields</span>
+                </div>
+            </div>
+
+            <!-- Canvas Area -->
+            <div class="canvas-container">
+                <canvas id="canvas"></canvas>
+            </div>
+
+            <!-- Right Sidebar with Tabs -->
+            <div class="sidebar right-sidebar bg-white border-l border-gray-200 flex flex-col">
+                <!-- Tab Navigation -->
+                <div class="tabs-header flex border-b border-gray-200">
+                    <button id="properties-tab-btn" class="tab-btn flex-1 py-2 px-4 text-sm font-medium text-blue-600 border-b-2 border-blue-600">Properties</button>
+                    <button id="layers-tab-btn" class="tab-btn flex-1 py-2 px-4 text-sm font-medium text-gray-500 hover:text-gray-700">Layers</button>
+                </div>
+                
+                <!-- Tab Content -->
+                <div class="tab-content flex-1 overflow-y-auto">
+                    <!-- Properties Panel -->
+                    <div id="properties-panel" class="properties-panel p-4">
+                        <div class="property-group">
+                            <label class="text-xs text-gray-600 mb-1">Position</label>
+                            <div class="property-inputs">
+                                <div class="property-input">
+                                    <span class="text-xs text-gray-500">X</span>
+                                    <input type="number" id="posX" value="0" class="w-full px-2 py-1 text-sm border border-gray-300 rounded">
+                                </div>
+                                <div class="property-input">
+                                    <span class="text-xs text-gray-500">Y</span>
+                                    <input type="number" id="posY" value="0" class="w-full px-2 py-1 text-sm border border-gray-300 rounded">
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="property-group">
+                            <label class="text-xs text-gray-600 mb-1">Size</label>
+                            <div class="property-inputs">
+                                <div class="property-input">
+                                    <span class="text-xs text-gray-500">W</span>
+                                    <input type="number" id="width" value="100" class="w-full px-2 py-1 text-sm border border-gray-300 rounded">
+                                </div>
+                                <div class="property-input">
+                                    <span class="text-xs text-gray-500">H</span>
+                                    <input type="number" id="height" value="100" class="w-full px-2 py-1 text-sm border border-gray-300 rounded">
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="property-group">
+                            <label class="text-xs text-gray-600 mb-1">Fill</label>
+                            <div class="color-picker-container">
+                                <div id="fill-color-picker"></div>
+                            </div>
+                        </div>
+                        
+                        <div class="property-group">
+                            <label class="text-xs text-gray-600 mb-1">Stroke</label>
+                            <div class="property-inputs">
+                                <div class="property-input full-width">
+                                    <span class="text-xs text-gray-500">Width</span>
+                                    <input type="number" id="stroke-width" value="1" class="w-full px-2 py-1 text-sm border border-gray-300 rounded">
+                                </div>
+                            </div>
+                            <div class="color-picker-container mt-2">
+                                <div id="stroke-color-picker"></div>
+                            </div>
+                        </div>
+                        
+                        <div class="property-group">
+                            <label class="text-xs text-gray-600 mb-1">Opacity</label>
+                            <div class="property-inputs">
+                                <div class="property-input full-width">
+                                    <input type="range" id="opacity" min="0" max="100" value="100" class="w-full">
+                                    <span id="opacity-value" class="text-xs text-gray-500">100%</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Layers Panel (Hidden by default) -->
+                    <div id="layers-panel" class="layers-panel p-4 hidden">
+                        <div id="layers-list" class="flex flex-col gap-1"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Bottom Status Bar -->
+        <div class="status-bar bg-white border-t border-gray-200 flex justify-between items-center px-4 py-2 text-xs text-gray-600">
+            <div class="coordinates">X: 0 Y: 0</div>
+            <div class="zoom-controls flex items-center gap-2">
+                <button id="zoom-out" class="w-6 h-6 flex items-center justify-center border border-gray-300 rounded hover:bg-gray-100">
+                    <span class="material-symbols-outlined text-sm">remove</span>
+                </button>
+                <span id="zoom-level" class="text-xs">100%</span>
+                <button id="zoom-in" class="w-6 h-6 flex items-center justify-center border border-gray-300 rounded hover:bg-gray-100">
+                    <span class="material-symbols-outlined text-sm">add</span>
+                </button>
+            </div>
+        </div>
+        
+        <!-- Performance Metrics -->
+        <div class="performance-metrics">
+            <div><span class="webgl-indicator"></span> WebGL: <span id="webgl-status">Off</span></div>
+            <div>FPS: <span id="fps-counter">0</span></div>
+            <div>Render Time: <span id="render-time">0</span> ms</div>
+        </div>
+    </div>
+
+    <!-- Core Scripts (Load these first) -->
+    <!-- Removed duplicate script tags as they are now loaded as ES modules -->
+    
+    <!-- Application State -->
+    <script type="module" src="js/state.js"></script>
+    
+    <!-- Feature Scripts -->
+    <script type="module" src="js/tools.js"></script>
+    <script type="module" src="js/layers.js"></script>
+    <script type="module" src="js/properties.js"></script>
+    <script type="module" src="js/canvas.js"></script>
+    <script type="module" src="js/storage.js"></script>
+    
+    <!-- Tab Switching Script -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const propertiesTabBtn = document.getElementById('properties-tab-btn');
+            const layersTabBtn = document.getElementById('layers-tab-btn');
+            const propertiesPanel = document.getElementById('properties-panel');
+            const layersPanel = document.getElementById('layers-panel');
+            
+            propertiesTabBtn.addEventListener('click', function() {
+                // Show properties, hide layers
+                propertiesPanel.classList.remove('hidden');
+                layersPanel.classList.add('hidden');
+                
+                // Update active tab styling
+                propertiesTabBtn.classList.add('text-blue-600', 'border-b-2', 'border-blue-600');
+                propertiesTabBtn.classList.remove('text-gray-500');
+                
+                layersTabBtn.classList.remove('text-blue-600', 'border-b-2', 'border-blue-600');
+                layersTabBtn.classList.add('text-gray-500');
+            });
+            
+            layersTabBtn.addEventListener('click', function() {
+                // Show layers, hide properties
+                layersPanel.classList.remove('hidden');
+                propertiesPanel.classList.add('hidden');
+                
+                // Update active tab styling
+                layersTabBtn.classList.add('text-blue-600', 'border-b-2', 'border-blue-600');
+                layersTabBtn.classList.remove('text-gray-500');
+                
+                propertiesTabBtn.classList.remove('text-blue-600', 'border-b-2', 'border-blue-600');
+                propertiesTabBtn.classList.add('text-gray-500');
+            });
+        });
+    </script>
+    
+    <!-- Debug Script -->
+    <script>
+        // Debug dropdown functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('Debug: Checking dropdown elements');
+            
+            const menuButtons = document.querySelectorAll('[id$="-menu-button"]');
+            console.log('Menu buttons found:', menuButtons.length);
+            
+            menuButtons.forEach(button => {
+                const targetId = button.id.replace('-button', '');
+                const targetDropdown = document.getElementById(`${targetId}-dropdown`);
+                console.log(`Button: ${button.id}, Target: ${targetId}-dropdown, Found:`, !!targetDropdown);
+                
+                // Add click event listener to toggle dropdown
+                button.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    
+                    // Close all other dropdowns first
+                    document.querySelectorAll('.dropdown-menu').forEach(dropdown => {
+                        if (dropdown.id !== `${targetId}-dropdown`) {
+                            dropdown.classList.add('hidden');
+                        }
+                    });
+                    
+                    // Toggle this dropdown
+                    if (targetDropdown) {
+                        targetDropdown.classList.toggle('hidden');
+                    }
+                });
+            });
+            
+            // Close dropdowns when clicking outside
+            document.addEventListener('click', function() {
+                document.querySelectorAll('.dropdown-menu').forEach(dropdown => {
+                    dropdown.classList.add('hidden');
+                });
+            });
+            
+            // Prevent clicks inside dropdowns from closing the dropdown
+            document.querySelectorAll('.dropdown-menu').forEach(dropdown => {
+                dropdown.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                });
+            });
+        });
+    </script>
+</body>
+</html> 
